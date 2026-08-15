@@ -1,0 +1,400 @@
+
+.pip-container {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
+
+.pip-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.pip-container form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.pip-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.pip-container input[type="text"],
+.pip-container input[type="number"],
+.pip-container input[type="file"],
+.pip-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pip-container input[type="file"] {
+    padding: 5px;
+}
+
+.pip-container .error {
+    color: red;
+    margin-top: 10px;
+}
+
+.pip-container .success {
+    color: green;
+    margin-top: 10px;
+}
+
+/* Attribute selection styles */
+.attribute-group {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.attribute-group select {
+    margin-right: 10px;
+    min-width: 200px;
+}
+
+.attribute-group .button {
+    margin-right: 10px;
+}
+
+.attribute-values {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.attribute-values label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
+.attribute-values input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Loading indicator for attribute values */
+.attribute-group.loading select {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.attribute-group.loading::after {
+    content: "Loading values...";
+    display: block;
+    margin-top: 10px;
+    font-style: italic;
+    color: #666;
+}
+
+#variants-preview {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#variants-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#variants-table th,
+#variants-table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#variants-table th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+}
+
+/* Product type selection styling */
+#product_type {
+    min-width: 200px;
+}
+
+/* Variant price input styling */
+.variant-original-price,
+.variant-sale-price {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.variant-original-price:focus,
+.variant-sale-price:focus {
+    border-color: #0073aa;
+    outline: none;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.variant-original-price.error,
+.variant-sale-price.error {
+    border-color: #dc3232;
+}
+
+/* Price validation styling */
+.variant-sale-price[style*="border-color: #dc3232"] {
+    background-color: #fff5f5;
+}
+
+/* Responsive table for variants */
+#variants-table {
+    overflow-x: auto;
+}
+
+#variants-table table {
+    min-width: 600px;
+}
+
+#variants-table td {
+    vertical-align: middle;
+}
+
+#variants-table input[type="number"] {
+    text-align: right;
+}
+
+/* Advanced manual upload preview */
+#advanced-image-preview {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#advanced-image-preview-body td {
+    vertical-align: top;
+}
+
+.pip-advanced-featured-image {
+    width: 100px;
+    height: auto;
+    display: block;
+}
+
+.pip-advanced-gallery-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pip-advanced-gallery-image {
+    width: 72px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #fff;
+}
+
+.pip-advanced-product-name {
+    width: 100%;
+    min-width: 180px;
+}
+
+.pip-advanced-multiselect-dropdown {
+    position: relative;
+    width: 100%;
+    min-width: 180px;
+}
+
+.pip-multiselect-toggle {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.pip-multiselect-toggle:after {
+    content: '▾';
+    float: right;
+    color: #666;
+}
+
+.pip-advanced-multiselect-dropdown.is-open .pip-multiselect-toggle {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.pip-multiselect-panel {
+    display: none;
+    position: absolute;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.pip-advanced-multiselect-dropdown.is-open .pip-multiselect-panel {
+    display: block;
+}
+
+.pip-multiselect-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 2px;
+    font-weight: normal;
+}
+
+.pip-multiselect-empty {
+    padding: 8px 2px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .attribute-group select {
+        min-width: 150px;
+    }
+    
+    .attribute-group .button {
+        display: block;
+        margin: 5px 0;
+        width: 100%;
+    }
+
+    .pip-advanced-multiselect-dropdown,
+    .pip-advanced-product-name {
+        min-width: 100%;
+    }
+
+    .pip-multiselect-panel {
+        position: static;
+        top: auto;
+        margin-top: 6px;
+    }
+}
+
+/* Select2 styling for admin preview selects */
+.pip-advanced-multiselect-dropdown .select2-container {
+    width: 100% !important;
+}
+.pip-advanced-multiselect-dropdown .select2-selection--multiple {
+    min-height: auto;
+    padding: 8px 12px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: none;
+    display: flex !important;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    overflow: visible !important;
+    width: 100%;
+}
+.pip-advanced-multiselect-dropdown .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px 8px;
+    align-content: flex-start;
+    width: 100%;
+}
+
+.pip-advanced-multiselect-dropdown .select2-selection__choice {
+    display: inline-flex !important;
+    align-items: center;
+    background: #eef6fb;
+    border: 1px solid #c6e0f5;
+    color: #0b57a4;
+    padding: 4px 10px;
+    margin: 0 !important;
+    border-radius: 999px;
+    font-size: 13px;
+    line-height: 1.4;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.pip-advanced-multiselect-dropdown .select2-search--inline {
+    display: flex !important;
+    order: -1;
+    flex-basis: 100% !important;
+    width: auto !important;
+    min-width: 60px;
+}
+
+.pip-advanced-multiselect-dropdown .select2-search__field {
+    height: 26px;
+    padding: 0 4px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    line-height: 1.4;
+}
+
+/* Ensure select container fills cell */
+.pip-advanced-multiselect-dropdown .select2-container {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+.pip-advanced-multiselect-dropdown .select2-selection__choice__remove {
+    color: rgba(0,0,0,0.4);
+    margin-left: 4px;
+    margin-right: 0;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #2271b1;
+    color: #fff;
+}
+.select2-container--default .select2-dropdown {
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border: 1px solid #c3c4c7;
+    z-index: 99999;
+}
+
+/* Ensure select looks good inside table cells */
+#advanced-image-preview-body td .select2-container {
+    max-width: 320px;
+}
+
+/* Small visual tweaks */
+.pip-advanced-featured-image { border-radius: 4px; }
+.pip-advanced-product-name { padding: 6px; border: 1px solid #e1e1e1; border-radius: 4px; }
+
+/* Improve scrollbar appearance on modern browsers */
+.pip-multiselect-panel::-webkit-scrollbar, .select2-results__options::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+.pip-multiselect-panel::-webkit-scrollbar-thumb, .select2-results__options::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 4px;
+}

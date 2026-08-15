@@ -94,6 +94,17 @@ class Product_Importer {
             }
         }
 
+        // Ảnh được chọn từ Media Library, thêm trực tiếp vào Gallery Images (không cần upload lại)
+        if (!empty($_POST['media_gallery_ids']) && is_array($_POST['media_gallery_ids'])) {
+            foreach ($_POST['media_gallery_ids'] as $media_id) {
+                $media_id = intval($media_id);
+                if ($media_id > 0 && get_post_type($media_id) === 'attachment' && wp_attachment_is_image($media_id)) {
+                    $gallery_ids[] = $media_id;
+                }
+            }
+            $gallery_ids = array_values(array_unique($gallery_ids));
+        }
+
         // Tạo sản phẩm WooCommerce
         $product_id = wp_insert_post(array(
             'post_title'    => $product_name,

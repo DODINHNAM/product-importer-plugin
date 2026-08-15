@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Product Importer Plugin
  * Description: A plugin to import products into WooCommerce with an easy-to-use interface.
- * Version: 1.5.4
+ * Version: 1.5.5
  * Author: NamDD
  */
 
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define constants
-define( 'PIP_VERSION', '1.5.4' );
+define( 'PIP_VERSION', '1.5.5' );
 define( 'PIP_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PIP_URL', plugin_dir_url( __FILE__ ) );
 define( 'PIP_PUBLIC_KEY', <<<EOD

@@ -26,6 +26,8 @@ function pip_render_admin_ui() {
         wp_enqueue_style( 'pip-select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0-rc.0' );
         wp_enqueue_script( 'pip-select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), '4.1.0-rc.0', true );
     }
+    // Enqueue the WordPress media uploader so products can pull gallery images from the Media Library
+    wp_enqueue_media();
     ?>
     <div class="wrap pip-container">
         <h1><?php esc_html_e( 'Import Products', 'product-importer-plugin' ); ?></h1>
@@ -59,6 +61,12 @@ function pip_render_admin_ui() {
                                     <?php esc_html_e( 'Also include the product image in Gallery Images', 'product-importer-plugin' ); ?>
                                 </label>
                             </p>
+                            <p>
+                                <button type="button" id="select-media-gallery-images" class="button"><?php esc_html_e( 'Add Images from Media Library', 'product-importer-plugin' ); ?></button>
+                                <button type="button" id="clear-media-gallery-images" class="button" style="display: none;"><?php esc_html_e( 'Clear Selected', 'product-importer-plugin' ); ?></button>
+                            </p>
+                            <p class="description"><?php esc_html_e( 'Images selected here will be added to the Gallery Images of every product imported in this batch.', 'product-importer-plugin' ); ?></p>
+                            <div id="media-gallery-preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
                             <div id="image-preview" style="margin-top: 20px;">
                                 <table border="1" style="width: 100%; border-collapse: collapse;">
                                     <thead>

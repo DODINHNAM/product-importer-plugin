@@ -1,3 +1,21 @@
+// Lấy danh sách value đã chọn của một select multiple (hỗ trợ cả khi Select2 đã khởi tạo)
+function getSelectedOptionValues(selectElement) {
+    if (!selectElement) return [];
+    return Array.from(selectElement.selectedOptions).map(opt => opt.value).filter(v => v !== '');
+}
+
+// Đặt các option được chọn cho select multiple, đồng bộ lại với Select2 nếu có
+function setMultiSelectValues(selectElement, values) {
+    if (!selectElement) return;
+    const valueArray = Array.isArray(values) ? values.map(String) : (values ? [String(values)] : []);
+    Array.from(selectElement.options).forEach(opt => {
+        opt.selected = valueArray.includes(opt.value);
+    });
+    if (window.jQuery && typeof jQuery.fn.select2 === 'function' && jQuery(selectElement).data('select2')) {
+        jQuery(selectElement).trigger('change');
+    }
+}
+
 function handleProductImagesChange(e) {
     const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']; // Các định dạng ảnh hợp lệ
     const files = e.target.files;
@@ -251,7 +269,8 @@ document.getElementById('product-import-form').addEventListener('submit', functi
     // Thu thập dữ liệu từ giao diện
     const originalPrice = document.getElementById('original_price')?.value.trim() || ''; // Giá gốc
     const salePrice = document.getElementById('sale_price')?.value.trim() || ''; // Giá khuyến mãi
-    const productCategory = document.getElementById('product_category')?.value.trim() || ''; // Danh mục sản phẩm
+    const productCategoryIds = getSelectedOptionValues(document.getElementById('product_category')); // Danh mục sản phẩm (nhiều)
+    const productTagIds = getSelectedOptionValues(document.getElementById('product_tag')); // Tag sản phẩm (nhiều)
     const productImages = document.getElementById('product_images').files;
     const productType = document.getElementById('product_type')?.value || 'simple'; // Loại sản phẩm
 
@@ -365,9 +384,9 @@ document.getElementById('product-import-form').addEventListener('submit', functi
         errors.push('Sale Price must be a valid number greater than or equal to 0.');
     }
 
-    // product_category: Bắt buộc chọn
-    if (!productCategory) {
-        errors.push('Product Category is required.');
+    // product_category: Bắt buộc chọn ít nhất 1
+    if (!productCategoryIds || productCategoryIds.length === 0) {
+        errors.push('Please select at least one product category.');
     }
 
     // product_images: Bắt buộc phải có ít nhất một file
@@ -394,7 +413,12 @@ document.getElementById('product-import-form').addEventListener('submit', functi
         formData.append('product_name', product.productName); // Tên sản phẩm
         formData.append('original_price', originalPrice); // Giá gốc
         formData.append('sale_price', salePrice); // Giá khuyến mãi
-        formData.append('product_category', productCategory); // Danh mục sản phẩm
+        productCategoryIds.forEach((termId) => {
+            formData.append('product_category[]', termId); // Danh mục sản phẩm
+        });
+        productTagIds.forEach((termId) => {
+            formData.append('product_tag[]', termId); // Tag sản phẩm
+        });
         formData.append('product_description', productDescription); // Mô tả sản phẩm
         formData.append('product_type', productType); // Loại sản phẩm
 
@@ -457,7 +481,8 @@ document.getElementById('product-import-form').addEventListener('submit', functi
 document.getElementById('export-json').addEventListener('click', function () {
     const originalPrice = document.getElementById('original_price').value.trim();
     const salePrice = document.getElementById('sale_price').value.trim();
-    const productCategory = document.getElementById('product_category').value.trim();
+    const productCategoryIds = getSelectedOptionValues(document.getElementById('product_category'));
+    const productTagIds = getSelectedOptionValues(document.getElementById('product_tag'));
     const productType = document.getElementById('product_type').value;
     let productDescription = '';
 
@@ -479,7 +504,8 @@ document.getElementById('export-json').addEventListener('click', function () {
     const jsonData = {
         original_price: originalPrice,
         sale_price: salePrice,
-        product_category: productCategory,
+        product_category: productCategoryIds,
+        product_tag: productTagIds,
         product_description: productDescription,
         product_type: productType,
         product_attributes: productAttributes,
@@ -515,7 +541,8 @@ document.getElementById('import-json').addEventListener('change', function (e) {
             // Điền dữ liệu vào form
             document.getElementById('original_price').value = jsonData.original_price || '';
             document.getElementById('sale_price').value = jsonData.sale_price || '';
-            document.getElementById('product_category').value = jsonData.product_category || '';
+            setMultiSelectValues(document.getElementById('product_category'), jsonData.product_category);
+            setMultiSelectValues(document.getElementById('product_tag'), jsonData.product_tag);
             document.getElementById('product_type').value = jsonData.product_type || 'simple';
 
             if (typeof tinymce !== 'undefined') {

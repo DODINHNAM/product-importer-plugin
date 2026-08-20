@@ -99,10 +99,25 @@ function pip_render_admin_ui() {
                                 'hide_empty' => false,
                             ) );
                             ?>
-                            <select id="product_category" name="product_category" required>
-                                <option value=""><?php esc_html_e( 'Select a category', 'product-importer-plugin' ); ?></option>
+                            <select id="product_category" name="product_category[]" class="pip-multiselect-select" multiple data-placeholder="<?php esc_attr_e( 'Select categories', 'product-importer-plugin' ); ?>" style="width:100%;">
                                 <?php foreach ( $categories as $category ) : ?>
                                     <option value="<?php echo esc_attr( $category->term_id ); ?>"><?php echo esc_html( $category->name ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="product_tag"><?php esc_html_e( 'Product Tag', 'product-importer-plugin' ); ?></label></th>
+                        <td>
+                            <?php
+                            $tags = get_terms( array(
+                                'taxonomy' => 'product_tag',
+                                'hide_empty' => false,
+                            ) );
+                            ?>
+                            <select id="product_tag" name="product_tag[]" class="pip-multiselect-select" multiple data-placeholder="<?php esc_attr_e( 'Select tags', 'product-importer-plugin' ); ?>" style="width:100%;">
+                                <?php foreach ( $tags as $tag ) : ?>
+                                    <option value="<?php echo esc_attr( $tag->term_id ); ?>"><?php echo esc_html( $tag->name ); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>

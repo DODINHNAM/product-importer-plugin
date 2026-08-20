@@ -34,7 +34,8 @@ class Product_Importer {
         $product_description = '<h2>' . esc_html($product_name) . '</h2>' . "\n\n" . $product_description;
         $original_price = isset($_POST['original_price']) ? floatval($_POST['original_price']) : 0;
         $sale_price = isset($_POST['sale_price']) ? floatval($_POST['sale_price']) : 0;
-        $product_category = isset($_POST['product_category']) ? intval($_POST['product_category']) : 0;
+        $product_category_ids = isset($_POST['product_category']) ? array_values(array_filter(array_map('intval', (array) $_POST['product_category']))) : array();
+        $product_tag_ids = isset($_POST['product_tag']) ? array_values(array_filter(array_map('intval', (array) $_POST['product_tag']))) : array();
         $product_type = isset($_POST['product_type']) ? sanitize_text_field($_POST['product_type']) : 'simple';
         $product_attributes = isset($_POST['product_attributes']) ? json_decode(stripslashes($_POST['product_attributes']), true) : array();
         $variant_prices = isset($_POST['variant_prices']) ? json_decode(stripslashes($_POST['variant_prices']), true) : array();
@@ -49,8 +50,8 @@ class Product_Importer {
         }
 
         // Validate category
-        if ($product_category <= 0) {
-            wp_send_json_error(array('message' => 'Please select a valid product category.'));
+        if (empty($product_category_ids)) {
+            wp_send_json_error(array('message' => 'Please select at least one product category.'));
         }
 
         // Validate attributes for variant products
@@ -124,8 +125,9 @@ class Product_Importer {
         if (!empty($gallery_ids)) {
             update_post_meta($product_id, '_product_image_gallery', implode(',', $gallery_ids));
         }
-        if ($product_category > 0) {
-            wp_set_object_terms($product_id, array($product_category), 'product_cat');
+        wp_set_object_terms($product_id, $product_category_ids, 'product_cat');
+        if (!empty($product_tag_ids)) {
+            wp_set_object_terms($product_id, $product_tag_ids, 'product_tag', false);
         }
         // --- Kết thúc thêm ---
 

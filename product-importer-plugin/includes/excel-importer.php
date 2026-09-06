@@ -34,6 +34,18 @@ function pip_handle_excel_import() {
         wp_send_json_error(array('message' => 'No file uploaded or upload error.'));
     }
 
+    $include_product_image_in_gallery = !empty($_POST['include_product_image_in_gallery']);
+    $media_gallery_ids = array();
+    if (!empty($_POST['media_gallery_ids']) && is_array($_POST['media_gallery_ids'])) {
+        foreach ($_POST['media_gallery_ids'] as $media_id) {
+            $media_id = absint($media_id);
+            if ($media_id > 0 && get_post_type($media_id) === 'attachment' && wp_attachment_is_image($media_id)) {
+                $media_gallery_ids[] = $media_id;
+            }
+        }
+        $media_gallery_ids = array_values(array_unique($media_gallery_ids));
+    }
+
     try {
         // Set memory limit and execution time
         ini_set('memory_limit', '256M');
@@ -99,6 +111,8 @@ function pip_handle_excel_import() {
                     'category' => $product_data['category'],
                     'product_image' => $product_data['product_image'][0] ?? '',
                     'gallery_images' => array_slice($product_data['product_image'], 1),
+                    'include_product_image_in_gallery' => $include_product_image_in_gallery,
+                    'media_gallery_ids' => $media_gallery_ids,
                     'tags' => $product_data['tags'],
                     'brands' => $product_data['brands'],
                     'description' => $product_data['description']
@@ -379,26 +393,42 @@ add_action('wp_ajax_pip_confirm_excel_import', function() {
                 }
             }
 
+            $gallery_ids = array();
+
             // Handle product image
             if (!empty($product['product_image'])) {
                 $image_id = pip_upload_image_from_url($product['product_image']);
                 if ($image_id) {
                     set_post_thumbnail($product_id, $image_id);
+                    if (!empty($product['include_product_image_in_gallery'])) {
+                        $gallery_ids[] = $image_id;
+                    }
                 }
             }
 
             // Handle gallery images
             if (!empty($product['gallery_images'])) {
-                $gallery_ids = [];
                 foreach ($product['gallery_images'] as $image_url) {
                     $image_id = pip_upload_image_from_url(trim($image_url));
                     if ($image_id) {
                         $gallery_ids[] = $image_id;
                     }
                 }
-                if (!empty($gallery_ids)) {
-                    update_post_meta($product_id, '_product_image_gallery', implode(',', $gallery_ids));
+            }
+
+            // Add already-uploaded Media Library images without uploading duplicates.
+            if (!empty($product['media_gallery_ids']) && is_array($product['media_gallery_ids'])) {
+                foreach ($product['media_gallery_ids'] as $media_id) {
+                    $media_id = absint($media_id);
+                    if ($media_id > 0 && get_post_type($media_id) === 'attachment' && wp_attachment_is_image($media_id)) {
+                        $gallery_ids[] = $media_id;
+                    }
                 }
+            }
+
+            $gallery_ids = array_values(array_unique($gallery_ids));
+            if (!empty($gallery_ids)) {
+                update_post_meta($product_id, '_product_image_gallery', implode(',', $gallery_ids));
             }
 
             $imported++;
@@ -454,7 +484,6 @@ function pip_upload_image_from_url($url) {
 
     return $attachment_id;
 }
-
 
 
 

@@ -221,6 +221,96 @@ function renderMediaGalleryPreview() {
     }
 })();
 
+// Images selected for the Excel Import batch are added to every imported product's gallery.
+window.pipExcelMediaGalleryIds = [];
+window.pipExcelMediaGalleryItems = []; // { id, url }
+
+function renderExcelMediaGalleryPreview() {
+    const previewContainer = document.getElementById('excel-media-gallery-preview');
+    const clearButton = document.getElementById('clear-excel-media-gallery-images');
+    if (!previewContainer) return;
+
+    previewContainer.innerHTML = '';
+    window.pipExcelMediaGalleryItems.forEach((item) => {
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+
+        const image = document.createElement('img');
+        image.src = item.url;
+        image.style = 'width: 80px; height: 80px; object-fit: cover; border: 1px solid #ccc;';
+        wrapper.appendChild(image);
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.textContent = '×';
+        removeButton.title = 'Remove';
+        removeButton.style = 'position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; line-height: 1; border-radius: 50%; border: 1px solid #ccc; background: #fff; cursor: pointer; padding: 0;';
+        removeButton.addEventListener('click', function () {
+            window.pipExcelMediaGalleryIds = window.pipExcelMediaGalleryIds.filter((id) => id !== item.id);
+            window.pipExcelMediaGalleryItems = window.pipExcelMediaGalleryItems.filter((selectedItem) => selectedItem.id !== item.id);
+            renderExcelMediaGalleryPreview();
+        });
+        wrapper.appendChild(removeButton);
+        previewContainer.appendChild(wrapper);
+    });
+
+    if (clearButton) {
+        clearButton.style.display = window.pipExcelMediaGalleryItems.length > 0 ? 'inline-block' : 'none';
+    }
+}
+
+(function initExcelMediaGalleryPicker() {
+    const selectButton = document.getElementById('select-excel-media-gallery-images');
+    const clearButton = document.getElementById('clear-excel-media-gallery-images');
+    if (!selectButton) return;
+
+    let mediaFrame = null;
+    selectButton.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        if (typeof wp === 'undefined' || !wp.media) {
+            alert('WordPress Media Library is not available.');
+            return;
+        }
+
+        if (mediaFrame) {
+            mediaFrame.open();
+            return;
+        }
+
+        mediaFrame = wp.media({
+            title: 'Select Gallery Images',
+            button: { text: 'Add to Gallery Images' },
+            library: { type: 'image' },
+            multiple: true
+        });
+
+        mediaFrame.on('select', function () {
+            mediaFrame.state().get('selection').each(function (attachment) {
+                const data = attachment.toJSON();
+                if (window.pipExcelMediaGalleryIds.includes(data.id)) {
+                    return;
+                }
+                const thumbnail = (data.sizes && (data.sizes.thumbnail || data.sizes.medium)) ? (data.sizes.thumbnail || data.sizes.medium).url : data.url;
+                window.pipExcelMediaGalleryIds.push(data.id);
+                window.pipExcelMediaGalleryItems.push({ id: data.id, url: thumbnail });
+            });
+            renderExcelMediaGalleryPreview();
+        });
+
+        mediaFrame.open();
+    });
+
+    if (clearButton) {
+        clearButton.addEventListener('click', function () {
+            window.pipExcelMediaGalleryIds = [];
+            window.pipExcelMediaGalleryItems = [];
+            renderExcelMediaGalleryPreview();
+        });
+    }
+})();
+
 // Re-render the preview if the user toggles the gallery option after already picking images
 document.getElementById('include_image_in_gallery').addEventListener('change', function () {
     const productImagesInput = document.getElementById('product_images');

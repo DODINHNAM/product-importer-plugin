@@ -312,6 +312,23 @@ function pip_render_admin_ui() {
                         </td>
                     </tr>
                     <tr>
+                        <th scope="row"><?php esc_html_e( 'Gallery Images', 'product-importer-plugin' ); ?></th>
+                        <td>
+                            <p>
+                                <label>
+                                    <input type="checkbox" id="excel_include_product_image_in_gallery" name="include_product_image_in_gallery" />
+                                    <?php esc_html_e( 'Also include the product image in Gallery Images', 'product-importer-plugin' ); ?>
+                                </label>
+                            </p>
+                            <p>
+                                <button type="button" id="select-excel-media-gallery-images" class="button"><?php esc_html_e( 'Add Images from Media Library', 'product-importer-plugin' ); ?></button>
+                                <button type="button" id="clear-excel-media-gallery-images" class="button" style="display: none;"><?php esc_html_e( 'Clear Selected', 'product-importer-plugin' ); ?></button>
+                            </p>
+                            <p class="description"><?php esc_html_e( 'Images selected here will be added to the Gallery Images of every product imported in this batch.', 'product-importer-plugin' ); ?></p>
+                            <div id="excel-media-gallery-preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="row"></th>
                         <td>
                             <?php submit_button( esc_html__( 'Upload Excel', 'product-importer-plugin' ) ); ?>
@@ -420,6 +437,9 @@ function pip_render_admin_ui() {
             
             var formData = new FormData(this);
             formData.append('action', 'pip_handle_excel_import');
+            window.pipExcelMediaGalleryIds.forEach(function(mediaId) {
+                formData.append('media_gallery_ids[]', mediaId);
+            });
             
             $.ajax({
                 url: ajaxurl,

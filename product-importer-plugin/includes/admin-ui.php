@@ -461,7 +461,6 @@ function pip_render_admin_ui() {
                         previewHtml += '<th><?php esc_html_e('Category', 'product-importer-plugin'); ?></th>';
                         previewHtml += '<th><?php esc_html_e('Description', 'product-importer-plugin'); ?></th>';
                         previewHtml += '<th><?php esc_html_e('Product Image', 'product-importer-plugin'); ?></th>';
-                        previewHtml += '<th><?php esc_html_e('Gallery Images', 'product-importer-plugin'); ?></th>';
                         previewHtml += '</tr></thead><tbody>';
 
                         products.forEach(function(product) {
@@ -474,13 +473,6 @@ function pip_render_admin_ui() {
                             previewHtml += '<td>';
                             if (product.product_image) {
                                 previewHtml += '<img src="' + product.product_image + '" style="max-width: 50px; height: auto;">';
-                            }
-                            previewHtml += '</td>';
-                            previewHtml += '<td>';
-                            if (product.gallery_images && product.gallery_images.length > 0) {
-                                product.gallery_images.forEach(function(image) {
-                                    previewHtml += '<img src="' + image + '" style="max-width: 50px; height: auto; margin-right: 5px;">';
-                                });
                             }
                             previewHtml += '</td>';
                             previewHtml += '</tr>';
@@ -507,6 +499,12 @@ function pip_render_admin_ui() {
 
         // Handle confirm import
         $(document).on('click', '#confirm-import', function() {
+            var $button = $(this);
+            if ($button.prop('disabled')) {
+                return;
+            }
+            $button.prop('disabled', true).text('<?php esc_html_e('Importing...', 'product-importer-plugin'); ?>');
+
             $.ajax({
                 url: ajaxurl,
                 type: 'POST',
@@ -520,6 +518,7 @@ function pip_render_admin_ui() {
                             alert(response.data.message);
                             location.reload();
                         } else {
+                            $button.prop('disabled', false).text('<?php esc_html_e('Confirm Import', 'product-importer-plugin'); ?>');
                             var errorMessage = response && response.data && response.data.message ? response.data.message : 'Error importing products.';
                             alert(errorMessage);
                         }

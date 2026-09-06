@@ -123,6 +123,13 @@ function pip_handle_excel_import() {
         // Store products in transient for later import
         set_transient('pip_excel_import_preview', $imported_products, HOUR_IN_SECONDS);
 
+        // Gallery URLs stay in the transient for the actual import, but are not
+        // returned to the browser preview for large Excel files.
+        $preview_products = array_map(function ($product) {
+            unset($product['gallery_images']);
+            return $product;
+        }, $imported_products);
+
         // Clear spreadsheet object
         $spreadsheet->disconnectWorksheets();
         unset($spreadsheet);
@@ -130,7 +137,7 @@ function pip_handle_excel_import() {
         // Send response
         wp_send_json_success(array(
             'message' => sprintf('Found %d products to import.', count($imported_products)),
-            'imported_products' => $imported_products
+            'imported_products' => $preview_products
         ));
 
     } catch (Exception $e) {
@@ -320,8 +327,25 @@ add_action('wp_ajax_pip_confirm_excel_import', function() {
         wp_send_json_error(['message' => __('Permission denied.', 'product-importer-plugin')]);
     }
 
+    // Claim this user's import before reading the preview. This prevents two
+    // Confirm Import requests from creating the same products twice.
+    $lock_key = 'pip_excel_import_lock_' . get_current_user_id();
+    $lock_created = add_option($lock_key, time(), '', 'no');
+    if (!$lock_created) {
+        $lock_started_at = (int) get_option($lock_key, 0);
+        if ($lock_started_at > 0 && (time() - $lock_started_at) > 900) {
+            delete_option($lock_key);
+            $lock_created = add_option($lock_key, time(), '', 'no');
+        }
+    }
+    if (!$lock_created) {
+        wp_send_json_error(['message' => __('An Excel import is already in progress. Please wait for it to finish.', 'product-importer-plugin')]);
+    }
+
     $products = get_transient('pip_excel_import_preview');
+
     if (!$products) {
+        delete_option($lock_key);
         wp_send_json_error(['message' => __('No products to import.', 'product-importer-plugin')]);
     }
 
@@ -443,6 +467,7 @@ add_action('wp_ajax_pip_confirm_excel_import', function() {
     // Clear transient
     delete_transient('pip_excel_import_preview');
 
+    delete_option($lock_key);
     wp_send_json_success([
         'message' => sprintf(
             __('Successfully imported %d products. %d errors.', 'product-importer-plugin'),
